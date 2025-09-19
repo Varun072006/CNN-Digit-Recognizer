@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title> Digit Recognizer </title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+  body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background: linear-gradient(135deg,#fdfdfd,#f3f9ff,#e6fffa,#fef7ff);
+    color: #222;
+    overflow-x: hidden;
+    transition: 0.5s;
+  }
+
+  header {
+    text-align: center;
+    padding: 40px 20px;
+    text-shadow: 1px 1px 10px rgba(0,0,0,0.1);
+  }
+
+  header h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 3rem;
+    background: linear-gradient(90deg,#ff9ecb,#ff85a2,#4fd1c5,#70e0d8);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientMove 10s ease infinite;
+    margin-bottom: 10px;
+  }
+
+  header p {
+    font-size: 1.2rem;
+    color: #444;
+  }
+
+  @keyframes gradientMove {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+  }
+
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+  }
+
+  .tab-btn {
+    padding: 14px 30px;
+    border: 2px solid transparent;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #333;
+    font-size: 1rem;
+    text-transform: uppercase;
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .tab-btn::before {
+    content: '';
+    position: absolute;
+    top: -2px; left: -2px; right: -2px; bottom: -2px;
+    border-radius: 50px;
+    background: linear-gradient(45deg,#ff9ecb,#4fd1c5,#ffe799,#b799ff);
+    background-size: 400% 400%;
+    z-index: -1;
+    filter: blur(15px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    animation: gradientMove 10s ease infinite;
+  }
+
+  .tab-btn:hover::before, .tab-btn.active::before { opacity: 1; }
+  .tab-btn:hover { transform: scale(1.1); }
+
+  .tab-content { display: none; justify-content: center; align-items: center; flex-direction: column; }
+  .tab-content.active { display: flex; }
+
+  .card {
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(20px);
+    border-radius: 30px;
+    padding: 40px 30px;
+    margin-bottom: 25px;
+    text-align: center;
+    box-shadow: 0 6px 25px rgba(0,0,0,0.1);
+    transition: 0.3s transform, 0.3s box-shadow;
+    position: relative;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: -3px; left: -3px; right: -3px; bottom: -3px;
+    border-radius: 30px;
+    background: linear-gradient(45deg,#ff9ecb,#90e0ef,#ffe799,#b799ff);
+    background-size: 400% 400%;
+    z-index: -1;
+    filter: blur(20px);
+    opacity: 0;
+    transition: 0.3s;
+    animation: gradientMove 12s ease infinite;
+  }
+
+  .card:hover::before { opacity: 1; }
+  .card:hover { transform: scale(1.05); }
+
+  canvas, video {
+    border-radius: 20px;
+    width: 320px;
+    height: 320px;
+    border: 2px solid #70e0d8;
+    background-color: #fff;
+    margin-bottom: 20px;
+    box-shadow: 0 0 15px #b3f7f2, 0 0 25px #ffd6eb;
+  }
+
+  input[type="file"] {
+    padding: 16px;
+    border-radius: 30px;
+    border: none;
+    margin-bottom: 20px;
+    width: 90%;
+    background: rgba(255,255,255,0.9);
+    color: #333;
+    font-weight: bold;
+    box-shadow: 0 0 15px #b3f7f2;
+    transition: all 0.3s;
+  }
+  input[type="file"]:hover { background: #f1f1f1; }
+
+  button {
+    padding: 14px 36px;
+    margin: 8px;
+    border-radius: 50px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    color: #333;
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 12px #ffb6d9;
+    font-size: 1rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  button::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: linear-gradient(45deg,#ff9ecb,#4fd1c5,#ffe799,#b799ff);
+    z-index: -1;
+    filter: blur(20px);
+    opacity: 0;
+    transition: all 0.3s;
+    animation: gradientMove 8s ease infinite;
+  }
+
+  button:hover::before { opacity: 0.8; }
+  button:hover { transform: scale(1.1); color: #333; }
+
+  #result {
+    text-align: center;
+    font-size: 3.4rem;
+    margin-top: 30px;
+    font-weight: bold;
+    color: #ff85a2;
+    text-shadow: 0 0 10px #70e0d8, 0 0 20px #ffe799;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1> Digit Recognizer </h1>
+  <p>Choose your input method below</p>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="openTab('handwriting')">Handwriting ✍️</button>
+  <button class="tab-btn" onclick="openTab('upload')">Upload 📁</button>
+  <button class="tab-btn" onclick="openTab('camera')">Camera 📷</button>
+</div>
+
+<!-- Handwriting -->
+<div id="handwriting" class="tab-content active card">
+  <canvas id="canvas"></canvas>
+  <button onclick="predictCanvas()">Predict 🔮</button>
+  <button onclick="clearCanvas()">Clear 🧹</button>
+</div>
+
+<!-- Upload -->
+<div id="upload" class="tab-content card">
+  <form id="uploadForm">
+    <input type="file" id="imageInput" accept="image/*" required>
+    <button type="submit">Predict 🔮</button>
+  </form>
+</div>
+
+<!-- Camera -->
+<div id="camera" class="tab-content card">
+  <video id="cameraVideo" autoplay></video><br>
+  <div style="display:flex;gap:12px;margin-bottom:15px;">
+    <button onclick="setCameraMode('mirror')">Mirror 🪞</button>
+    <button onclick="setCameraMode('normal')">Normal 🎥</button>
+  </div>
+  <button onclick="captureCamera()">Capture & Predict 🔮</button>
+</div>
+
+<p id="result">Your result will appear here</p>
+
+<script>
+  function openTab(tabName) {
+    const tabs = document.querySelectorAll('.tab-content');
+    const btns = document.querySelectorAll('.tab-btn');
+    tabs.forEach(tab=>tab.classList.remove('active'));
+    btns.forEach(btn=>btn.classList.remove('active'));
+    document.getElementById(tabName).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+
+  let canvas = document.getElementById("canvas");
+  let ctx = canvas.getContext("2d");
+  ctx.fillStyle="white"; ctx.fillRect(0,0,canvas.width,canvas.height);
+  let painting=false;
+  canvas.addEventListener("mousedown",(e)=>{painting=true; draw(e)});
+  canvas.addEventListener("mouseup",()=>{painting=false; ctx.beginPath()});
+  canvas.addEventListener("mousemove",(e)=>draw(e));
+  function draw(e){
+    if(!painting) return;
+    ctx.lineWidth=20; ctx.lineCap="round"; ctx.strokeStyle="black";
+    const rect=canvas.getBoundingClientRect();
+    ctx.lineTo(e.clientX-rect.left,e.clientY-rect.top);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(e.clientX-rect.left,e.clientY-rect.top);
+  }
+  function clearCanvas(){
+    ctx.fillStyle="white"; ctx.fillRect(0,0,canvas.width,canvas.height);
+    document.getElementById("result").innerText="Your result will appear here";
+  }
+  function predictCanvas(){
+    const dataURL=canvas.toDataURL("image/png");
+    fetch("/predict",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({imageBase64:dataURL})})
+      .then(res=>res.json())
+      .then(data=>document.getElementById("result").innerText="Predicted Digit: "+data.prediction);
+  }
+
+  const form=document.getElementById("uploadForm");
+  form.addEventListener("submit",(e)=>{
+    e.preventDefault();
+    const file=document.getElementById("imageInput").files[0];
+    if(!file) return;
+    const formData=new FormData();
+    formData.append("image",file);
+    fetch("/predict",{method:"POST",body:formData})
+      .then(res=>res.json())
+      .then(data=>document.getElementById("result").innerText="Predicted Digit: "+data.prediction);
+  });
+
+  const video=document.getElementById("cameraVideo");
+  let cameraMode='mirror';
+  navigator.mediaDevices.getUserMedia({video:true})
+    .then(stream=>{
+      video.srcObject=stream;
+      video.style.transform="scaleX(-1)";
+    }).catch(err=>console.error("Camera error:",err));
+
+  function setCameraMode(mode){
+    cameraMode=mode;
+    video.style.transform = (mode==='mirror') ? "scaleX(-1)" : "scaleX(1)";
+  }
+
+  function captureCamera(){
+    const tempCanvas=document.createElement("canvas");
+    tempCanvas.width=video.videoWidth;
+    tempCanvas.height=video.videoHeight;
+    const tempCtx=tempCanvas.getContext("2d");
+    if(cameraMode==='mirror'){ tempCtx.translate(tempCanvas.width,0); tempCtx.scale(-1,1);}
+    tempCtx.drawImage(video,0,0,tempCanvas.width,tempCanvas.height);
+    const dataURL=tempCanvas.toDataURL("image/png");
+    fetch("/predict",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({imageBase64:dataURL})})
+      .then(res=>res.json())
+      .then(data=>document.getElementById("result").innerText="Predicted Digit: "+data.prediction);
+  }
+</script>
+</body>
+</html>

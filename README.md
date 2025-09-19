@@ -49,6 +49,12 @@ This project demonstrates the full pipeline of building and deploying a digit re
 
 ---
 
+## 🖥️ Flask App Screenshot
+
+![Flask App Screenshot](screenshots/flask_ui.png)
+
+---
+
 ## 🎯 Conclusion
 This project successfully demonstrates a **full end-to-end machine learning workflow** for digit recognition.  
 From **data preprocessing** and **CNN training** to **real-time deployment with a web interface**, the system can accurately predict handwritten digits using multiple input methods.  

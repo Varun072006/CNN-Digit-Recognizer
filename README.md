@@ -51,7 +51,7 @@ This project demonstrates the full pipeline of building and deploying a digit re
 
 ## 🖥️ Flask App Screenshot
 
-![Flask App Screenshot](screenshots/flask_ui.png)
+![Flask App Screenshot](sImages/flask.png)
 
 ---
 
